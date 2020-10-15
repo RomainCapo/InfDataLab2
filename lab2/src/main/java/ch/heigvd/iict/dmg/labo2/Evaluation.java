@@ -13,6 +13,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+
+import javax.print.attribute.SetOfIntegerSyntax;
 
 public class Evaluation {
 
@@ -91,6 +96,12 @@ public class Evaluation {
 		return qrels;
 	}
 
+	public static List<Integer> IntersectionBtwTwoList(List<Integer> a, List<Integer> b) {
+		List<Integer> result = new ArrayList<Integer>(a);
+		result.retainAll(new ArrayList<Integer>(b));
+		return result;
+	}
+
 	public static void main(String[] args) throws IOException {
         ///
         /// Reading queries and queries relations files
@@ -131,24 +142,39 @@ public class Evaluation {
         ///  selected analyzer using performance metrics like F-measure,
         ///  precision, recall,...
         ///
-        int totalRelevantDocs = 0;
-        int totalRetrievedDocs = 0;
-        int totalRetrievedRelevantDocs = 0;
+        //int totalDocs = 0; //1.a
+        int totalRetrievedDocs = 0; //1.b
+        int totalRelevantDocs = 0; //1.c
+        int totalRetrievedRelevantDocs = 0; //1.d
+        List<Double> AP = new ArrayList<Double>(); //2
+        List<Double> RPrecisions = new ArrayList<Double>(); //4
 
         for(int queryNumber = 1; queryNumber <queries.size();queryNumber++)
         {
             List<Integer> queryResults = lab2Index.search(queries.get(queryNumber));
             List<Integer> qrelResults = qrels.get(queryNumber);
-
-            System.out.println(queryResults);
-            System.out.println(qrelResults);
-            break;
             
-            //totalRelevantDocs += qrelResults.size();
-            //totalRetrievedDocs += queryResults.size();
+            totalRelevantDocs += qrelResults.size();
+            totalRetrievedDocs += queryResults.size();
+            
+
+            totalRetrievedRelevantDocs += IntersectionBtwTwoList(queryResults, qrelResults).size();
+            
+            AP.add((double)totalRetrievedRelevantDocs/totalRelevantDocs);
+            
+            int R = qrelResults.size();
+            List<Integer> rRelevantDocs = queryResults.stream().limit(R).collect(Collectors.toList());
+
+            RPrecisions.add((double) (IntersectionBtwTwoList(rRelevantDocs, qrelResults).size()/rRelevantDocs.size()));
         }
         
-
+        double avgPrecision = totalRetrievedRelevantDocs/totalRetrievedDocs; //1.e
+        double avgRecall = totalRetrievedRelevantDocs/totalRelevantDocs; //1.f
+        double fMeasure = (2*avgRecall*avgPrecision)/(avgRecall + avgPrecision); //1.g
+        
+        double meanAveragePrecision = AP.stream().mapToDouble(Double::doubleValue).sum() / AP.size(); //3
+        
+        double avgRPrecision = 0;
 
         // TODO student
         // compute the metrics asked in the instructions
@@ -161,11 +187,6 @@ public class Evaluation {
         //   returned matching a query
         //        List<Integer> qrelResults = qrels.get(queryNumber);
 
-        double avgPrecision = 0.0;
-        double avgRPrecision = 0.0;
-        double avgRecall = 0.0;
-        double meanAveragePrecision = 0.0;
-        double fMeasure = 0.0;
 
         // average precision at the 11 recall levels (0,0.1,0.2,...,1) over all queries
         double[] avgPrecisionAtRecallLevels = createZeroedRecalls();
@@ -180,11 +201,6 @@ public class Evaluation {
                 totalRetrievedRelevantDocs, avgPrecision, avgRecall, fMeasure,
                 meanAveragePrecision, avgRPrecision,
                 avgPrecisionAtRecallLevels);
-    }
-
-	private double get_tp_fp_fn_tn(List<Integer>queryResults, List<Integer> qrelResults) {
-		return 0;
-    	
     }
 
 	private static void displayMetrics(int totalRetrievedDocs, int totalRelevantDocs, int totalRetrievedRelevantDocs,
