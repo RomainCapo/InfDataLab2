@@ -96,12 +96,26 @@ public class Evaluation {
 		return qrels;
 	}
 
-	public static List<Integer> IntersectionBtwTwoList(List<Integer> a, List<Integer> b) {
+	public static List<Integer> intersectionBtwTwoList(List<Integer> a, List<Integer> b) {
 		List<Integer> result = new ArrayList<Integer>(a);
 		result.retainAll(new ArrayList<Integer>(b));
 		return result;
 	}
 
+	public static List<Double> interpolatedPrecision(List<Double> unInterpolatedList)
+	{
+		List<Double> interpolatedList = new ArrayList<Double>();
+		interpolatedList.add(unInterpolatedList.get(0));
+		
+		for(int i = 0; i < unInterpolatedList.size();i++)
+		{
+		interpolatedList.add(Collections.max(unInterpolatedList));
+		unInterpolatedList.set(i, -1.0);
+		}
+		
+		return interpolatedList;
+	}
+	
 	public static void main(String[] args) throws IOException {
         ///
         /// Reading queries and queries relations files
@@ -148,24 +162,25 @@ public class Evaluation {
         int totalRetrievedRelevantDocs = 0; //1.d
         List<Double> AP = new ArrayList<Double>(); //2
         List<Double> RPrecisions = new ArrayList<Double>(); //4
+        
+        List<Double> precisons = new ArrayList<Double>(); //5
 
         for(int queryNumber = 1; queryNumber <queries.size();queryNumber++)
         {
             List<Integer> queryResults = lab2Index.search(queries.get(queryNumber));
             List<Integer> qrelResults = qrels.get(queryNumber);
             
-            totalRelevantDocs += qrelResults.size();
             totalRetrievedDocs += queryResults.size();
+            totalRelevantDocs += qrelResults.size();
             
-
-            totalRetrievedRelevantDocs += IntersectionBtwTwoList(queryResults, qrelResults).size();
+            totalRetrievedRelevantDocs += intersectionBtwTwoList(queryResults, qrelResults).size();
             
             AP.add((double)totalRetrievedRelevantDocs/totalRelevantDocs);
             
             int R = qrelResults.size();
             List<Integer> rRelevantDocs = queryResults.stream().limit(R).collect(Collectors.toList());
 
-            RPrecisions.add((double) (IntersectionBtwTwoList(rRelevantDocs, qrelResults).size()/rRelevantDocs.size()));
+            RPrecisions.add((double) (intersectionBtwTwoList(rRelevantDocs, qrelResults).size()/rRelevantDocs.size()));
         }
         
         double avgPrecision = totalRetrievedRelevantDocs/totalRetrievedDocs; //1.e
@@ -174,7 +189,13 @@ public class Evaluation {
         
         double meanAveragePrecision = AP.stream().mapToDouble(Double::doubleValue).sum() / AP.size(); //3
         
-        double avgRPrecision = 0;
+        double avgRPrecision = RPrecisions.stream().mapToDouble(Double::doubleValue).sum() / RPrecisions.size(); //4
+        
+        
+        // average precision at the 11 recall levels (0,0.1,0.2,...,1) over all queries
+        List<Double> in
+        
+        double[] avgPrecisionAtRecallLevels = createZeroedRecalls(); //5
 
         // TODO student
         // compute the metrics asked in the instructions
@@ -188,8 +209,7 @@ public class Evaluation {
         //        List<Integer> qrelResults = qrels.get(queryNumber);
 
 
-        // average precision at the 11 recall levels (0,0.1,0.2,...,1) over all queries
-        double[] avgPrecisionAtRecallLevels = createZeroedRecalls();
+
 
         ///
         ///  Part IV - Display the metrics
