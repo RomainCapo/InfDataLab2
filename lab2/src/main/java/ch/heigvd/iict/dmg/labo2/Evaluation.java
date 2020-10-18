@@ -164,11 +164,18 @@ public class Evaluation {
         List<Double> RPrecisions = new ArrayList<Double>(); //4
         
         List<Double> precisons = new ArrayList<Double>(); //5
+        
+        //System.out.println(qrels);
 
-        for(int queryNumber = 1; queryNumber <queries.size();queryNumber++)
+        for(int queryNumber = 0; queryNumber < queries.size();queryNumber++)
         {
             List<Integer> queryResults = lab2Index.search(queries.get(queryNumber));
-            List<Integer> qrelResults = qrels.get(queryNumber);
+            List<Integer> qrelResults = qrels.get(queryNumber+1);
+            
+            if(qrelResults == null)
+            {
+            	qrelResults = new ArrayList<Integer>();
+            }
             
             totalRetrievedDocs += queryResults.size();
             totalRelevantDocs += qrelResults.size();
@@ -180,11 +187,18 @@ public class Evaluation {
             int R = qrelResults.size();
             List<Integer> rRelevantDocs = queryResults.stream().limit(R).collect(Collectors.toList());
 
-            RPrecisions.add((double) (intersectionBtwTwoList(rRelevantDocs, qrelResults).size()/rRelevantDocs.size()));
+            if(rRelevantDocs.size()!=0)
+            {
+                RPrecisions.add((double) (intersectionBtwTwoList(rRelevantDocs, qrelResults).size()/rRelevantDocs.size()));
+            }
+            else
+            {
+            	RPrecisions.add(0.0);
+            }
         }
-        
-        double avgPrecision = totalRetrievedRelevantDocs/totalRetrievedDocs; //1.e
-        double avgRecall = totalRetrievedRelevantDocs/totalRelevantDocs; //1.f
+                
+        double avgPrecision = totalRetrievedRelevantDocs/(double)totalRetrievedDocs; //1.e
+        double avgRecall = totalRetrievedRelevantDocs/(double)totalRelevantDocs; //1.f
         double fMeasure = (2*avgRecall*avgPrecision)/(avgRecall + avgPrecision); //1.g
         
         double meanAveragePrecision = AP.stream().mapToDouble(Double::doubleValue).sum() / AP.size(); //3
@@ -193,7 +207,6 @@ public class Evaluation {
         
         
         // average precision at the 11 recall levels (0,0.1,0.2,...,1) over all queries
-        List<Double> in
         
         double[] avgPrecisionAtRecallLevels = createZeroedRecalls(); //5
 
