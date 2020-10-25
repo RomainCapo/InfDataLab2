@@ -236,6 +236,11 @@ public class Evaluation {
 		///
 		int totalRetrievedDocs = 0; // 1.b
 		int totalRelevantDocs = 0; // 1.c
+
+		List<Double> precisions = new ArrayList<Double>(); //1.e
+		List<Double> recalls = new ArrayList<Double>(); //1.f
+		List<Double> f1scores = new ArrayList<Double>();
+		
 		int totalRetrievedRelevantDocs = 0; // 1.d
 		List<Double> AP = new ArrayList<Double>(); // 2
 		List<Double> RPrecisions = new ArrayList<Double>(); // 4
@@ -253,8 +258,19 @@ public class Evaluation {
 
 			totalRetrievedDocs += queryResults.size(); // 1.b
 			totalRelevantDocs += qrelResults.size(); // 1.c
-
+			
 			totalRetrievedRelevantDocs += intersectionBtwTwoList(queryResults, qrelResults).size(); // 1.d
+			
+			// 1.e
+			double precision = totalRetrievedRelevantDocs / (double) totalRetrievedDocs;
+			precisions.add(precision);
+			
+			//1.f
+			double recall = totalRetrievedRelevantDocs / (double) totalRelevantDocs;
+			recalls.add(recall);
+			
+			//1.g
+			f1scores.add((2*precision*recall)/(precision+recall));
 
 			// Part 2
 			List<Double>[] recallPrecisionAtk = computePrecisionRecallAtk(queryResults, qrelResults);
@@ -290,9 +306,9 @@ public class Evaluation {
 			}
 		}
 		
-		double avgPrecision = totalRetrievedRelevantDocs / (double) totalRetrievedDocs; // 1.e
-		double avgRecall = totalRetrievedRelevantDocs / (double) totalRelevantDocs; // 1.f
-		double fMeasure = (2 * avgRecall * avgPrecision) / (avgRecall + avgPrecision); // 1.g
+		double avgPrecision = precisions.stream().mapToDouble(Double::doubleValue).sum() / precisions.size(); // 1.e
+		double avgRecall = recalls.stream().mapToDouble(Double::doubleValue).sum() / recalls.size(); // 1.f
+		double fMeasure = f1scores.stream().mapToDouble(Double::doubleValue).sum() / f1scores.size(); // 1.g
 
 		double meanAveragePrecision = AP.stream().mapToDouble(Double::doubleValue).sum() / AP.size(); // Part 3
 
