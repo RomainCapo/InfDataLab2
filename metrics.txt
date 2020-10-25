@@ -8,9 +8,9 @@ WhitespaceAnalyzer
 Number of retrieved documents: 121648
 Number of relevant documents: 796
 Number of relevant documents retrieved: 680
-Average precision: 0.00558989872418782
-Average recall: 0.8542713567839196
-F-measure: 0.011107118356146481
+Average precision: 0.0055086725688587345
+Average recall: 0.8416550924492288
+F-measure: 0.010941489378650122
 MAP: 0.14364177680201032
 Average R-Precision: 0.03125
 Average precision at recall levels: 
@@ -36,9 +36,9 @@ StandardAnalyzer with set size 0
 Number of retrieved documents: 128685
 Number of relevant documents: 796
 Number of relevant documents retrieved: 735
-Average precision: 0.005711621401095698
-Average recall: 0.9233668341708543
-F-measure: 0.011353017044971847
+Average precision: 0.005756741506302308
+Average recall: 0.9170843305568646
+F-measure: 0.011437670985711641
 MAP: 0.15884594673401772
 Average R-Precision: 0.03125
 Average precision at recall levels: 
@@ -64,9 +64,9 @@ EnglishAnalyzer with set size 33
 Number of retrieved documents: 82734
 Number of relevant documents: 796
 Number of relevant documents retrieved: 720
-Average precision: 0.00870258902023352
-Average recall: 0.9045226130653267
-F-measure: 0.01723931521609003
+Average precision: 0.008959674084743444
+Average recall: 0.8948698677684684
+F-measure: 0.017734399103017356
 MAP: 0.2060148873468738
 Average R-Precision: 0.03125
 Average precision at recall levels: 
@@ -92,9 +92,9 @@ EnglishAnalyzer with set size 428
 Number of retrieved documents: 74608
 Number of relevant documents: 796
 Number of relevant documents retrieved: 717
-Average precision: 0.009610229466009007
-Average recall: 0.9007537688442211
-F-measure: 0.01901755875019893
+Average precision: 0.009869843014398293
+Average recall: 0.8929867279451258
+F-measure: 0.01951663252500744
 MAP: 0.22461358947107243
 Average R-Precision: 0.046875
 Average precision at recall levels: 
